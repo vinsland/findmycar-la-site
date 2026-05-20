@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FindMyCar LA | Dealer Auction Car Sourcing</title>
+  <meta name="description" content="FindMyCar LA helps buyers source verified cars from dealer auctions in Los Angeles with transparent pricing and video inspections.">
+  <style>
+    :root {
+      --bg: #0b0b0d;
+      --panel: #17171a;
+      --panel-soft: #222226;
+      --text: #ffffff;
+      --muted: rgba(255, 255, 255, 0.68);
+      --faint: rgba(255, 255, 255, 0.45);
+      --line: rgba(255, 255, 255, 0.12);
+      --white: #ffffff;
+      --ink: #111113;
+      --paper: #f6f4ef;
+      --accent: #d6ff4f;
+      --accent-2: #7dd3fc;
+      --radius: 8px;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .container {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid var(--line);
+      background: rgba(11, 11, 13, 0.86);
+      backdrop-filter: blur(16px);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      min-height: 76px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border-radius: var(--radius);
+      background: var(--white);
+      color: var(--ink);
+      flex: 0 0 auto;
+    }
+
+    .brand-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .brand-subtitle {
+      margin: 3px 0 0;
+      color: var(--faint);
+      font-size: 12px;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .nav a:hover {
+      color: var(--white);
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 48px;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      padding: 0 22px;
+      cursor: pointer;
+      font-weight: 800;
+      transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+      white-space: nowrap;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+    }
+
+    .button-primary {
+      background: var(--white);
+      color: var(--ink);
+    }
+
+    .button-primary:hover {
+      background: #eeeeee;
+    }
+
+    .button-ghost {
+      border-color: var(--line);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--white);
+    }
+
+    .button-ghost:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .hero {
+      overflow: hidden;
+      border-bottom: 1px solid var(--line);
+      background:
+        linear-gradient(115deg, rgba(214, 255, 79, 0.13), transparent 31%),
+        linear-gradient(280deg, rgba(125, 211, 252, 0.14), transparent 34%),
+        var(--bg);
+    }
+
+    .hero-grid {
+      display: grid;
+      align-items: center;
+      gap: 56px;
+      min-height: calc(100vh - 76px);
+      padding: 64px 0 52px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 22px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 9px 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      max-width: 760px;
+      margin-bottom: 22px;
+      font-size: clamp(42px, 8vw, 82px);
+      line-height: 0.96;
+      letter-spacing: 0;
+    }
+
+    .hero-copy {
+      max-width: 650px;
+      margin-bottom: 32px;
+      color: var(--muted);
+      font-size: 19px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .small-note {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+      color: var(--faint);
+      font-size: 14px;
+    }
+
+    .showcase {
+      position: relative;
+      min-height: 380px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(160deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.03)),
+        var(--panel);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .showcase::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(to bottom, black, transparent 78%);
+    }
+
+    .car-visual {
+      position: absolute;
+      left: 50%;
+      top: 42px;
+      width: min(560px, 92%);
+      height: 220px;
+      transform: translateX(-50%);
+      z-index: 1;
+    }
+
+    .car-visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 28px 36px rgba(0, 0, 0, 0.36));
+    }
+
+    .search-card {
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      bottom: 24px;
+      z-index: 2;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: var(--radius);
+      background: rgba(11, 11, 13, 0.78);
+      padding: 22px;
+      backdrop-filter: blur(18px);
+    }
+
+    .search-card small {
+      color: var(--faint);
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .search-card strong {
+      display: block;
+      margin-top: 7px;
+      font-size: 26px;
+    }
+
+    .search-card p {
+      margin: 7px 0 0;
+      color: var(--muted);
+    }
+
+    .floating-fee {
+      position: absolute;
+      right: 22px;
+      top: 22px;
+      z-index: 3;
+      border-radius: var(--radius);
+      background: var(--white);
+      color: var(--ink);
+      padding: 16px 18px;
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+    }
+
+    .floating-fee span {
+      display: block;
+      color: #68686d;
+      font-size: 13px;
+    }
+
+    .floating-fee strong {
+      font-size: 32px;
+      line-height: 1;
+    }
+
+    .trust-band {
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .trust-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      padding: 24px 0;
+    }
+
+    .trust-item,
+    .benefit-item,
+    .included-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .trust-item {
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 15px;
+      color: rgba(255, 255, 255, 0.82);
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .section {
+      padding: 82px 0;
+    }
+
+    .section-title {
+      max-width: 720px;
+      margin-bottom: 38px;
+    }
+
+    .kicker {
+      margin-bottom: 12px;
+      color: var(--faint);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin-bottom: 0;
+      font-size: clamp(34px, 5vw, 56px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 22px;
+    }
+
+    .icon-box {
+      display: grid;
+      width: 46px;
+      height: 46px;
+      margin-bottom: 20px;
+      place-items: center;
+      border-radius: var(--radius);
+      background: var(--white);
+      color: var(--ink);
+    }
+
+    .step-count {
+      margin-bottom: 8px;
+      color: var(--faint);
+      font-size: 13px;
+    }
+
+    .card h3 {
+      margin-bottom: 12px;
+      font-size: 20px;
+      line-height: 1.15;
+    }
+
+    .card p {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .light-section {
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 56px;
+      align-items: center;
+    }
+
+    .lead {
+      margin: 22px 0 0;
+      color: #626267;
+      font-size: 18px;
+    }
+
+    .benefits {
+      display: grid;
+      gap: 12px;
+    }
+
+    .benefit-item {
+      border-radius: var(--radius);
+      background: #ffffff;
+      padding: 18px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .risk-band {
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .risk-band .split {
+      padding: 50px 0;
+    }
+
+    .pricing-card,
+    .form-panel {
+      border-radius: var(--radius);
+      background: var(--white);
+      color: var(--ink);
+      box-shadow: var(--shadow);
+    }
+
+    .pricing-card {
+      padding: 32px;
+    }
+
+    .price {
+      margin: 8px 0 28px;
+      font-size: clamp(56px, 9vw, 76px);
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .included {
+      display: grid;
+      gap: 14px;
+      font-weight: 800;
+    }
+
+    .local-band {
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .local-band .split {
+      padding: 52px 0;
+    }
+
+    .form-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 42px;
+      padding: 42px;
+    }
+
+    .info-note {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 26px;
+      border-radius: var(--radius);
+      background: #eceae4;
+      padding: 16px;
+      font-weight: 800;
+    }
+
+    form {
+      display: grid;
+      gap: 12px;
+    }
+
+    label {
+      display: grid;
+      gap: 7px;
+      color: #55555a;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    input {
+      width: 100%;
+      min-height: 52px;
+      border: 1px solid #d8d7d2;
+      border-radius: var(--radius);
+      padding: 0 15px;
+      background: #ffffff;
+      color: var(--ink);
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--ink);
+      box-shadow: 0 0 0 3px rgba(17, 17, 19, 0.08);
+    }
+
+    .form-panel .button {
+      width: 100%;
+      margin-top: 4px;
+      background: var(--ink);
+      color: var(--white);
+    }
+
+    .form-panel .button:hover {
+      background: #2a2a2f;
+    }
+
+    .form-disclaimer,
+    .form-message {
+      margin: 0;
+      color: #626267;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .form-message {
+      display: none;
+      border-radius: var(--radius);
+      background: #ecfdf3;
+      color: #17683a;
+      padding: 12px;
+      font-weight: 800;
+    }
+
+    .form-message.is-visible {
+      display: block;
+    }
+
+    .cta {
+      text-align: center;
+    }
+
+    .cta-inner {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .cta p {
+      margin: 20px auto 30px;
+      max-width: 640px;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .site-footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 0;
+      color: var(--faint);
+      font-size: 14px;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .icon {
+      width: 20px;
+      height: 20px;
+      flex: 0 0 auto;
+    }
+
+    @media (min-width: 900px) {
+      .hero-grid {
+        grid-template-columns: 1.04fr 0.96fr;
+      }
+    }
+
+    @media (max-width: 980px) {
+      .nav {
+        display: none;
+      }
+
+      .hero-grid,
+      .split,
+      .form-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .trust-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .steps {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 620px) {
+      .container {
+        width: min(100% - 24px, 1120px);
+      }
+
+      .header-inner {
+        min-height: 68px;
+      }
+
+      .site-header .button {
+        display: none;
+      }
+
+      .brand-subtitle {
+        display: none;
+      }
+
+      .hero-grid {
+        min-height: auto;
+        padding: 44px 0 36px;
+      }
+
+      .hero-actions .button {
+        width: 100%;
+      }
+
+      .showcase {
+        min-height: 330px;
+      }
+
+      .car-visual {
+        top: 56px;
+        width: 112%;
+        height: 150px;
+      }
+
+      .floating-fee {
+        left: 18px;
+        right: auto;
+      }
+
+      .search-card {
+        left: 18px;
+        right: 18px;
+        bottom: 18px;
+      }
+
+      .trust-grid,
+      .steps {
+        grid-template-columns: 1fr;
+      }
+
+      .section {
+        padding: 64px 0;
+      }
+
+      .risk-band .split,
+      .local-band .split {
+        padding: 42px 0;
+      }
+
+      .form-panel {
+        padding: 24px;
+      }
+
+      .footer-inner {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#top" aria-label="FindMyCar LA home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg class="icon" viewBox="0 0 24 24" fill="none">
+            <path d="M5 17h14M7 17a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm14 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM5 17l1.5-5.5A3 3 0 0 1 9.4 9h5.2a3 3 0 0 1 2.9 2.5L19 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span>
+          <span class="brand-title">FindMyCar LA</span>
+          <span class="brand-subtitle">Dealer auction car sourcing</span>
+        </span>
+      </a>
+
+      <nav class="nav" aria-label="Main navigation">
+        <a href="#how">How it works</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#form">Get started</a>
+      </nav>
+
+      <a class="button button-primary" href="#form">Start My Search</a>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 21s7-5.2 7-12a7 7 0 1 0-14 0c0 6.8 7 12 7 12Z" stroke="currentColor" stroke-width="2"/>
+              <circle cx="12" cy="9" r="2.5" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            Los Angeles based car sourcing
+          </div>
+          <h1>Find Your Perfect Car Without Wasting Weeks Searching</h1>
+          <p class="hero-copy">Skip Facebook Marketplace, avoid overpriced dealers, and get a verified car from dealer auctions, all handled for you.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#form">
+              Get Your Car Sourced
+              <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+            <a class="button button-ghost" href="#how">See How It Works</a>
+          </div>
+          <p class="small-note">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+              <path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Request takes less than 2 minutes
+          </p>
+        </div>
+
+        <div class="showcase" aria-label="Example car search">
+          <div class="floating-fee">
+            <span>Transparent service fee</span>
+            <strong>$1,000</strong>
+          </div>
+          <div class="car-visual">
+            <img src="assets/toyota-corolla-hybrid.jpg" alt="White Toyota Corolla Hybrid">
+          </div>
+          <div class="search-card">
+            <small>Example search</small>
+            <strong>2020 Toyota Corolla</strong>
+            <p>Budget approved • Auction value reviewed • Inspection ready</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="trust-band" aria-label="Service highlights">
+      <div class="container trust-grid">
+        <div class="trust-item">✓ Dealer Auction Access</div>
+        <div class="trust-item">✓ Transparent Pricing</div>
+        <div class="trust-item">✓ Verified Vehicles</div>
+        <div class="trust-item">✓ Los Angeles Based</div>
+      </div>
+    </section>
+
+    <section id="how" class="section">
+      <div class="container">
+        <div class="section-title">
+          <p class="kicker">How it works</p>
+          <h2>From search to keys, handled for you.</h2>
+        </div>
+
+        <div class="steps">
+          <article class="card">
+            <div class="icon-box">🔎</div>
+            <p class="step-count">Step 1</p>
+            <h3>Tell Us What You Want</h3>
+            <p>Share your budget, preferred model, mileage, year range, and must-have features.</p>
+          </article>
+
+          <article class="card">
+            <div class="icon-box">$</div>
+            <p class="step-count">Step 2</p>
+            <h3>We Analyze the Market</h3>
+            <p>We review real auction values and define a smart buying range before bidding.</p>
+          </article>
+
+          <article class="card">
+            <div class="icon-box">▶</div>
+            <p class="step-count">Step 3</p>
+            <h3>We Find & Inspect Cars</h3>
+            <p>You receive videos, photos, and honest condition feedback before any purchase.</p>
+          </article>
+
+          <article class="card">
+            <div class="icon-box">✓</div>
+            <p class="step-count">Step 4</p>
+            <h3>We Buy It For You</h3>
+            <p>We bid at dealer auctions only within your approved budget.</p>
+          </article>
+
+          <article class="card">
+            <div class="icon-box">🚘</div>
+            <p class="step-count">Step 5</p>
+            <h3>You Get The Car</h3>
+            <p>Ready to drive. No stress, no wasted weekends, no dealer games.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section light-section">
+      <div class="container split">
+        <div>
+          <p class="kicker">Why us</p>
+          <h2>Why Clients Choose FindMyCar LA</h2>
+          <p class="lead">We do not just sell what is sitting on a lot. We search for the right vehicle based on your real needs, budget, and buying range.</p>
+        </div>
+        <div class="benefits">
+          <div class="benefit-item">✓ No hidden dealer markups</div>
+          <div class="benefit-item">✓ Access to dealer-only auctions</div>
+          <div class="benefit-item">✓ Transparent pricing: you see the real numbers</div>
+          <div class="benefit-item">✓ Video inspections before purchase</div>
+          <div class="benefit-item">✓ Save days or weeks of searching</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="risk-band">
+      <div class="container split">
+        <div>
+          <p class="kicker">Less risk</p>
+          <h2>No More Guessing. No More Risk.</h2>
+        </div>
+        <p class="hero-copy">Buying a used car should not feel like a gamble. We show you the real market value, real condition, and real price before we buy anything.</p>
+      </div>
+    </section>
+
+    <section id="pricing" class="section">
+      <div class="container split">
+        <div>
+          <p class="kicker">Pricing</p>
+          <h2>Simple, Transparent Pricing</h2>
+          <p class="hero-copy">One clear service fee. No hidden dealer games. Your deposit is applied toward your vehicle purchase.</p>
+        </div>
+
+        <div class="pricing-card">
+          <p class="kicker">Flat Fee</p>
+          <div class="price">$1,000</div>
+          <div class="included">
+            <div class="included-item">✓ Full car sourcing</div>
+            <div class="included-item">✓ Auction access</div>
+            <div class="included-item">✓ Inspection & buying support</div>
+            <div class="included-item">✓ Deposit applied toward purchase</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="local-band">
+      <div class="container split">
+        <div>
+          <p class="kicker">Local trust</p>
+          <h2>Based in Los Angeles</h2>
+        </div>
+        <p class="hero-copy">We work directly with dealer auctions across Los Angeles and can invite you to inspect vehicles with us when available.</p>
+      </div>
+    </section>
+
+    <section id="form" class="section">
+      <div class="container form-panel">
+        <div>
+          <p class="kicker">Get started</p>
+          <h2>Tell Us What You Are Looking For</h2>
+          <p class="lead">Send your request and we will review your budget, vehicle preferences, and realistic auction buying range.</p>
+          <div class="info-note">
+            <span aria-hidden="true">📄</span>
+            <span>Best for serious buyers ready to purchase within 30 days.</span>
+          </div>
+        </div>
+
+        <form id="request-form">
+          <label>
+            Budget
+            <input name="budget" type="text" placeholder="$15,000" required>
+          </label>
+          <label>
+            Preferred Make & Model
+            <input name="model" type="text" placeholder="Toyota Corolla, Honda Civic..." required>
+          </label>
+          <label>
+            Year Range
+            <input name="year" type="text" placeholder="2018-2022">
+          </label>
+          <label>
+            Mileage
+            <input name="mileage" type="text" placeholder="Under 70,000 miles">
+          </label>
+          <label>
+            Phone Number
+            <input name="phone" type="tel" placeholder="(555) 123-4567" required>
+          </label>
+          <button class="button" type="submit">
+            Start My Search
+            <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <p id="form-message" class="form-message">Thanks! Your request is ready. Connect this form to email or a backend to receive submissions.</p>
+          <p class="form-disclaimer">We will contact you to confirm details before starting the search.</p>
+        </form>
+      </div>
+    </section>
+
+    <section class="section cta">
+      <div class="container cta-inner">
+        <h2>Ready to Stop Searching?</h2>
+        <p>Tell us what you need. We will find it, inspect it, and buy it for you.</p>
+        <a class="button button-primary" href="#form">Get Started</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>© 2026 FindMyCar LA. All rights reserved.</span>
+      <span>Los Angeles, California</span>
+    </div>
+  </footer>
+
+  <script>
+    const form = document.querySelector("#request-form");
+    const message = document.querySelector("#form-message");
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      message.classList.add("is-visible");
+      form.reset();
+    });
+  </script>
+</body>
+</html>

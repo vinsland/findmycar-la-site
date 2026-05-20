@@ -1,0 +1,48 @@
+<svg width="740" height="250" viewBox="0 0 740 250" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">FindMyCar LA</title>
+  <desc id="desc">FindMyCar LA dealer auction car sourcing logo</desc>
+  <defs>
+    <linearGradient id="silver" x1="112" y1="145" x2="474" y2="219" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffffff"/>
+      <stop offset="0.5" stop-color="#c7c9ce"/>
+      <stop offset="1" stop-color="#ffffff"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="450" y1="142" x2="642" y2="213" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#63b6ff"/>
+      <stop offset="0.45" stop-color="#1488ff"/>
+      <stop offset="1" stop-color="#005ac8"/>
+    </linearGradient>
+    <linearGradient id="carBlue" x1="132" y1="86" x2="662" y2="113" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2fa8ff"/>
+      <stop offset="0.5" stop-color="#0076ed"/>
+      <stop offset="1" stop-color="#46b8ff"/>
+    </linearGradient>
+    <filter id="softShadow" x="0" y="0" width="740" height="250" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#000000" flood-opacity="0.55"/>
+    </filter>
+  </defs>
+
+  <rect width="740" height="250" rx="18" fill="#080809"/>
+
+  <g filter="url(#softShadow)">
+    <path d="M149 88C207 58 272 47 344 47C443 47 499 70 606 89" stroke="white" stroke-width="8" stroke-linecap="round"/>
+    <path d="M242 88L265 75L286 87M150 88C138 91 125 96 118 105C113 111 112 116 113 120" stroke="white" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M122 112C193 96 209 120 251 122C314 125 367 94 460 92C526 91 591 99 672 117" stroke="url(#carBlue)" stroke-width="11" stroke-linecap="round"/>
+    <path d="M443 119L395 142" stroke="#0d62c6" stroke-width="8" stroke-linecap="round"/>
+    <path d="M625 126L669 125" stroke="#168eff" stroke-width="8" stroke-linecap="round"/>
+  </g>
+
+  <g filter="url(#softShadow)">
+    <text x="92" y="176" fill="url(#silver)" font-family="Arial Black, Arial, sans-serif" font-size="58" font-style="italic" font-weight="900">FindMy</text>
+    <text x="409" y="176" fill="url(#blue)" font-family="Arial Black, Arial, sans-serif" font-size="58" font-style="italic" font-weight="900">Car</text>
+    <text x="589" y="171" fill="url(#blue)" font-family="Arial Black, Arial, sans-serif" font-size="35" font-style="italic" font-weight="900">LA</text>
+    <path d="M584 181H644" stroke="#168eff" stroke-width="3"/>
+    <path d="M584 135H644" stroke="#168eff" stroke-width="3"/>
+  </g>
+
+  <g opacity="0.82">
+    <path d="M92 209H146" stroke="#aeb0b5" stroke-width="2"/>
+    <text x="166" y="214" fill="#d6d8dc" font-family="Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="10">DEALER AUCTION CAR SOURCING</text>
+    <path d="M605 209H659" stroke="#aeb0b5" stroke-width="2"/>
+  </g>
+</svg>
