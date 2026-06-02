@@ -590,8 +590,19 @@
 
     .footer-inner {
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-between;
       gap: 20px;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-links a:hover {
+      color: var(--white);
     }
 
     .icon {
@@ -940,7 +951,10 @@
   <footer class="site-footer">
     <div class="container footer-inner">
       <span>© 2026 FindMyCar LA. All rights reserved.</span>
-      <span>Los Angeles, California</span>
+      <span class="footer-links">
+        <a href="privacy.html">Privacy Policy</a>
+        <span>Los Angeles, California</span>
+      </span>
     </div>
   </footer>
 
