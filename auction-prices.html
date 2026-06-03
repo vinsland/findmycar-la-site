@@ -7,14 +7,29 @@
 </head>
 <body>
   <h1>Recent Dealer Auction Sales</h1>
+  <p>Search recent auction sale examples by make, model, year or trim.</p>
 
-  <input id="search" type="text" placeholder="Search: Toyota Corolla, Honda Civic..." />
+  <div style="display:grid; gap:12px; max-width:700px; margin-bottom:24px;">
+    <input id="search" type="text" placeholder="Search: Toyota Corolla LE, Honda Civic Sport..." />
 
+    <select id="makeFilter">
+      <option value="">All Makes</option>
+    </select>
+
+    <select id="yearFilter">
+      <option value="">All Years</option>
+    </select>
+  </div>
+
+  <p id="count"></p>
   <div id="results"></div>
 
   <script>
     const results = document.getElementById("results");
     const search = document.getElementById("search");
+    const makeFilter = document.getElementById("makeFilter");
+    const yearFilter = document.getElementById("yearFilter");
+    const count = document.getElementById("count");
 
     let cars = [];
 
@@ -22,18 +37,57 @@
       .then(response => response.json())
       .then(data => {
         cars = data;
-        renderCars(cars);
+        setupFilters(cars);
+        results.innerHTML = "<p>Use search or filters to view recent auction sales.</p>";
       });
+
+    function formatPrice(value) {
+      if (!value) return "";
+      const number = Number(String(value).replace(/[^0-9.]/g, ""));
+      return isNaN(number) ? value : number.toLocaleString("en-US");
+    }
+
+    function formatMiles(value) {
+      if (!value) return "";
+      const number = Number(String(value).replace(/[^0-9.]/g, ""));
+      return isNaN(number) ? value : number.toLocaleString("en-US");
+    }
+
+    function setupFilters(list) {
+      const makes = [...new Set(list.map(car => car.make).filter(Boolean))].sort();
+      const years = [...new Set(list.map(car => car.year).filter(Boolean))].sort((a, b) => b - a);
+
+      makes.forEach(make => {
+        const option = document.createElement("option");
+        option.value = make;
+        option.textContent = make;
+        makeFilter.appendChild(option);
+      });
+
+      years.forEach(year => {
+        const option = document.createElement("option");
+        option.value = year;
+        option.textContent = year;
+        yearFilter.appendChild(option);
+      });
+    }
 
     function renderCars(list) {
       results.innerHTML = "";
 
       if (list.length === 0) {
+        count.textContent = "";
         results.innerHTML = "<p>No results found.</p>";
         return;
       }
 
-      list.forEach(car => {
+      count.textContent = `${list.length} results found`;
+
+      list.slice(0, 20).forEach(car => {
+        const style = car.style || car.trim || "";
+        const odometer = car.odometer || car.mileage || "";
+        const price = car.price || car.sale_price || car.sold_price || "";
+
         const card = document.createElement("div");
         card.style.border = "1px solid #ddd";
         card.style.padding = "16px";
@@ -42,25 +96,47 @@
 
         card.innerHTML = `
           <h3>${car.year || ""} ${car.make || ""} ${car.model || ""}</h3>
-          <p><strong>Mileage:</strong> ${car.odometer || car.mileage || ""}</p>
+          <p><strong>Trim:</strong> ${style}</p>
+          <p><strong>Mileage:</strong> ${formatMiles(odometer)} miles</p>
           <p><strong>Grade:</strong> ${car.grade || ""}</p>
-          <p><strong>Sold Price:</strong> $${car.price || car.sale_price || ""}</p>
+          <p><strong>Sold Price:</strong> $${formatPrice(price)}</p>
         `;
 
         results.appendChild(card);
       });
+
+      if (list.length > 20) {
+        results.innerHTML += "<p>Showing first 20 results. Use filters to narrow your search.</p>";
+      }
     }
 
-    search.addEventListener("input", () => {
-      const query = search.value.toLowerCase();
+    function applyFilters() {
+      const query = search.value.toLowerCase().trim();
+      const selectedMake = makeFilter.value;
+      const selectedYear = yearFilter.value;
+
+      if (!query && !selectedMake && !selectedYear) {
+        count.textContent = "";
+        results.innerHTML = "<p>Use search or filters to view recent auction sales.</p>";
+        return;
+      }
 
       const filtered = cars.filter(car => {
-        const text = `${car.year} ${car.make} ${car.model}`.toLowerCase();
-        return text.includes(query);
+        const text = `${car.year} ${car.make} ${car.model} ${car.style || ""}`.toLowerCase();
+
+        const matchesSearch = !query || text.includes(query);
+        const matchesMake = !selectedMake || car.make === selectedMake;
+        const matchesYear = !selectedYear || String(car.year) === String(selectedYear);
+
+        return matchesSearch && matchesMake && matchesYear;
       });
 
       renderCars(filtered);
-    });
+    }
+
+    search.addEventListener("input", applyFilters);
+    makeFilter.addEventListener("change", applyFilters);
+    yearFilter.addEventListener("change", applyFilters);
   </script>
 </body>
 </html>
