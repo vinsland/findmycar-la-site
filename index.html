@@ -152,6 +152,29 @@
       background: rgba(255, 255, 255, 0.1);
     }
 
+    .header-actions,
+    .cta-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .header-actions {
+      flex-wrap: nowrap;
+    }
+
+    .button-call {
+      border-color: var(--line);
+      background: transparent;
+      color: var(--white);
+    }
+
+    .button-call:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
     .hero {
       overflow: hidden;
       border-bottom: 1px solid var(--line);
@@ -218,6 +241,21 @@
       margin: 0;
       color: var(--faint);
       font-size: 14px;
+    }
+
+    .call-note {
+      margin-top: 12px;
+    }
+
+    .call-note button {
+      border: 0;
+      background: none;
+      padding: 0;
+      color: var(--white);
+      cursor: pointer;
+      font-weight: 800;
+      text-decoration: underline;
+      text-underline-offset: 3px;
     }
 
     .showcase {
@@ -581,6 +619,84 @@
       font-size: 18px;
     }
 
+    .cta .small-note {
+      justify-content: center;
+      margin-top: 16px;
+      font-size: 13px;
+    }
+
+    .call-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(10px);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 180ms ease, visibility 180ms ease;
+    }
+
+    .call-modal.is-open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .call-modal-card {
+      position: relative;
+      width: min(460px, 100%);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--panel);
+      padding: 42px 32px 32px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      transform: translateY(12px) scale(0.98);
+      transition: transform 180ms ease;
+    }
+
+    .call-modal.is-open .call-modal-card {
+      transform: translateY(0) scale(1);
+    }
+
+    .call-modal-card h2 {
+      margin-bottom: 12px;
+      font-size: clamp(30px, 7vw, 42px);
+    }
+
+    .call-modal-card > p:not(.kicker) {
+      margin-bottom: 24px;
+      color: var(--muted);
+    }
+
+    .call-modal-card .button {
+      width: 100%;
+      font-size: 20px;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--white);
+      cursor: pointer;
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    body.modal-open {
+      overflow: hidden;
+    }
+
     .site-footer {
       border-top: 1px solid var(--line);
       padding: 28px 0;
@@ -650,6 +766,16 @@
         display: none;
       }
 
+      .site-header .button-call {
+        display: inline-flex;
+        min-height: 42px;
+        padding: 0 16px;
+      }
+
+      .header-actions .button-primary {
+        display: none;
+      }
+
       .brand-subtitle {
         display: none;
       }
@@ -661,6 +787,10 @@
 
       .hero-actions .button {
         width: 100%;
+      }
+
+      .call-modal-card {
+        padding: 40px 22px 24px;
       }
 
       .showcase {
@@ -750,7 +880,10 @@
         <a href="#form">Get started</a>
       </nav>
 
-      <a class="button button-primary" href="#form">Start My Search</a>
+      <div class="header-actions">
+        <button class="button button-call" type="button" data-call-open>Call Us</button>
+        <a class="button button-primary" href="#form">Start My Search</a>
+      </div>
     </div>
   </header>
 
@@ -775,6 +908,7 @@
               </svg>
             </a>
             <a class="button button-ghost" href="#how">See How It Works</a>
+            <button class="button button-call" type="button" data-call-open>Call Us</button>
           </div>
           <p class="small-note">
             <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -782,6 +916,9 @@
               <path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
             Request takes less than 2 minutes
+          </p>
+          <p class="small-note call-note">
+            Have a question? <button type="button" data-call-open>Give us a call.</button>
           </p>
         </div>
 
@@ -968,7 +1105,11 @@
       <div class="container cta-inner">
         <h2>Ready to Stop Searching?</h2>
         <p>Tell us what you need. We will find it, inspect it, and buy it for you.</p>
-        <a class="button button-primary" href="#form">Get Started</a>
+        <div class="cta-actions">
+          <a class="button button-primary" href="#form">Get Started</a>
+          <button class="button button-call" type="button" data-call-open>Call Us</button>
+        </div>
+        <p class="small-note">Not sure where to start? Give us a quick call and we will help.</p>
       </div>
     </section>
   </main>
@@ -983,9 +1124,61 @@
     </div>
   </footer>
 
+  <div class="call-modal" id="call-modal" role="dialog" aria-modal="true" aria-labelledby="call-modal-title" aria-hidden="true">
+    <div class="call-modal-card">
+      <button class="modal-close" type="button" aria-label="Close call dialog" data-call-close>&times;</button>
+      <p class="kicker">Have a question?</p>
+      <h2 id="call-modal-title">Give Us a Call</h2>
+      <p>We are happy to answer your questions and help you get started.</p>
+      <a class="button button-primary" href="tel:+18184233683" data-call-link>
+        <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M8.5 3H5.8A2.8 2.8 0 0 0 3 5.8C3 14.2 9.8 21 18.2 21a2.8 2.8 0 0 0 2.8-2.8v-2.7l-4-1-1.2 2.4a12.2 12.2 0 0 1-8.7-8.7L9.5 7l-1-4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        (818) 423-3683
+      </a>
+    </div>
+  </div>
+
   <script>
     const form = document.querySelector("#request-form");
     const message = document.querySelector("#form-message");
+    const callModal = document.querySelector("#call-modal");
+    const callOpenButtons = document.querySelectorAll("[data-call-open]");
+    const callCloseButton = callModal.querySelector("[data-call-close]");
+    let lastFocusedElement;
+
+    const openCallModal = () => {
+      lastFocusedElement = document.activeElement;
+      callModal.classList.add("is-open");
+      callModal.setAttribute("aria-hidden", "false");
+      document.body.classList.add("modal-open");
+      callCloseButton.focus();
+    };
+
+    const closeCallModal = () => {
+      callModal.classList.remove("is-open");
+      callModal.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("modal-open");
+      lastFocusedElement?.focus();
+    };
+
+    callOpenButtons.forEach((button) => {
+      button.addEventListener("click", openCallModal);
+    });
+
+    callCloseButton.addEventListener("click", closeCallModal);
+
+    callModal.addEventListener("click", (event) => {
+      if (event.target === callModal) {
+        closeCallModal();
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && callModal.classList.contains("is-open")) {
+        closeCallModal();
+      }
+    });
   
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
