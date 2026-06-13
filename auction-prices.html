@@ -313,6 +313,15 @@
       color: var(--muted);
     }
 
+    .load-more {
+      display: none;
+      margin: 24px auto 0;
+    }
+
+    .load-more.is-visible {
+      display: flex;
+    }
+
     .site-footer {
       border-top: 1px solid var(--line);
       padding: 28px 0;
@@ -444,6 +453,7 @@
 
           <p id="count" class="count"></p>
           <div id="results" class="results"></div>
+          <button id="loadMore" class="button load-more" type="button">Load More Results</button>
         </div>
       </div>
     </section>
@@ -465,33 +475,66 @@
     const makeFilter = document.getElementById("makeFilter");
     const yearFilter = document.getElementById("yearFilter");
     const count = document.getElementById("count");
+    const loadMore = document.getElementById("loadMore");
 
     let cars = [];
+    let filteredCars = [];
+    let visibleCount = 0;
+    const resultsPerPage = 50;
 
     fetch("data/auction-data.json")
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Auction data request failed: ${response.status}`);
+        }
+
+        return response.json();
+      })
       .then(data => {
-        cars = data;
+        cars = data.map(normalizeCar);
         setupFilters(cars);
-        showEmptyState("Use search or filters to view recent auction sales.");
+        applyFilters();
       })
       .catch(() => {
         showEmptyState("Auction data could not be loaded. Please try again later.");
       });
 
+    function normalizeCar(car) {
+      return {
+        year: car.year ?? car.Year ?? "",
+        make: car.make ?? car.Make ?? "",
+        model: car.model ?? car.Model ?? "",
+        style: car.style ?? car.Style ?? car.trim ?? car.Trim ?? "",
+        odometer: car.odometer ?? car.Odometer ?? car.mileage ?? car.Mileage ?? "",
+        grade: car.grade ?? car.Grade ?? "",
+        price: car.price ?? car.Price ?? car.sale_price ?? car["Sale Price"] ?? car.sold_price ?? "",
+        color: car.color ?? car.Color ?? "",
+        saleDate: car.saleDate ?? car["Sale Date"] ?? "",
+        stockNumber: car.stockNumber ?? car["Stock #"] ?? "",
+        runNumber: car.runNumber ?? car["Run Number"] ?? ""
+      };
+    }
+
     function formatPrice(value) {
-      if (!value) return "";
+      if (value === "" || value === null || value === undefined) return "";
       const number = Number(String(value).replace(/[^0-9.]/g, ""));
       return isNaN(number) ? value : number.toLocaleString("en-US");
     }
 
     function formatMiles(value) {
-      if (!value) return "";
+      if (value === "" || value === null || value === undefined) return "";
       const number = Number(String(value).replace(/[^0-9.]/g, ""));
       return isNaN(number) ? value : number.toLocaleString("en-US");
     }
 
+    function escapeHtml(value) {
+      const element = document.createElement("div");
+      element.textContent = String(value);
+      return element.innerHTML;
+    }
+
     function showEmptyState(text) {
+      loadMore.classList.remove("is-visible");
       results.innerHTML = `<p class="empty-state">${text}</p>`;
     }
 
@@ -514,43 +557,44 @@
       });
     }
 
-    function renderCars(list) {
+    function renderCars() {
       results.innerHTML = "";
 
-      if (list.length === 0) {
+      if (filteredCars.length === 0) {
         count.textContent = "";
         showEmptyState("No results found.");
         return;
       }
 
-      count.textContent = `${list.length} results found`;
+      const visibleCars = filteredCars.slice(0, visibleCount);
+      count.textContent = `Showing ${visibleCars.length} of ${filteredCars.length} results`;
 
-      list.slice(0, 20).forEach(car => {
-        const style = car.style || car.trim || "";
-        const odometer = car.odometer || car.mileage || "";
-        const price = car.price || car.sale_price || car.sold_price || "";
+      visibleCars.forEach(car => {
+        const style = car.style;
+        const odometer = car.odometer;
+        const price = car.price;
 
         const card = document.createElement("article");
         card.className = "result-card";
 
         card.innerHTML = `
-          <h3>${car.year || ""} ${car.make || ""} ${car.model || ""}</h3>
+          <h3>${escapeHtml(`${car.year} ${car.make} ${car.model}`.trim())}</h3>
           <dl class="result-meta">
             <div>
               <dt>Trim</dt>
-              <dd>${style || "Not listed"}</dd>
+              <dd>${escapeHtml(style || "Not listed")}</dd>
             </div>
             <div>
               <dt>Mileage</dt>
-              <dd>${formatMiles(odometer) || "Not listed"}${odometer ? " miles" : ""}</dd>
+              <dd>${escapeHtml(formatMiles(odometer) || "Not listed")}${odometer !== "" ? " miles" : ""}</dd>
             </div>
             <div>
               <dt>Grade</dt>
-              <dd>${car.grade || "Not listed"}</dd>
+              <dd>${escapeHtml(car.grade !== "" ? car.grade : "Not listed")}</dd>
             </div>
             <div>
               <dt>Sold Price</dt>
-              <dd>${price ? `$${formatPrice(price)}` : "Not listed"}</dd>
+              <dd>${price !== "" ? `$${escapeHtml(formatPrice(price))}` : "Not listed"}</dd>
             </div>
           </dl>
         `;
@@ -558,9 +602,7 @@
         results.appendChild(card);
       });
 
-      if (list.length > 20) {
-        results.innerHTML += `<p class="empty-state">Showing first 20 results. Use filters to narrow your search.</p>`;
-      }
+      loadMore.classList.toggle("is-visible", visibleCount < filteredCars.length);
     }
 
     function applyFilters() {
@@ -568,14 +610,17 @@
       const selectedMake = makeFilter.value;
       const selectedYear = yearFilter.value;
 
-      if (!query && !selectedMake && !selectedYear) {
-        count.textContent = "";
-        showEmptyState("Use search or filters to view recent auction sales.");
-        return;
-      }
-
-      const filtered = cars.filter(car => {
-        const text = `${car.year} ${car.make} ${car.model} ${car.style || ""} ${car.trim || ""}`.toLowerCase();
+      filteredCars = cars.filter(car => {
+        const text = [
+          car.year,
+          car.make,
+          car.model,
+          car.style,
+          car.color,
+          car.saleDate,
+          car.stockNumber,
+          car.runNumber
+        ].join(" ").toLowerCase();
 
         const matchesSearch = !query || text.includes(query);
         const matchesMake = !selectedMake || car.make === selectedMake;
@@ -584,12 +629,17 @@
         return matchesSearch && matchesMake && matchesYear;
       });
 
-      renderCars(filtered);
+      visibleCount = Math.min(resultsPerPage, filteredCars.length);
+      renderCars();
     }
 
     search.addEventListener("input", applyFilters);
     makeFilter.addEventListener("change", applyFilters);
     yearFilter.addEventListener("change", applyFilters);
+    loadMore.addEventListener("click", () => {
+      visibleCount = Math.min(visibleCount + resultsPerPage, filteredCars.length);
+      renderCars();
+    });
   </script>
 </body>
 </html>
